@@ -12,7 +12,7 @@ See `postman/` and `dbeaver/` for instructions to install Postman and DBeaver.
 ## Python dependencies
 1. Clone this repo, and create a virtual environment TBD
 2. Install flask
-3. Go to `classroom-management`, and start the webapp
+3. Go to `flask-tutorial`, and start the webapp
 
 # Steps
 1. Follow instructions under `postman/` to make a few POST requests that will create and store classroom objects in a SQLite database
