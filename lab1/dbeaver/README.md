@@ -14,3 +14,13 @@ You can play with the following operations
 - insert a Post
 - update a Post
 - Create a ERD (Entity Relation Diagrams) to create graphic presentations of database entities and the relations between them (right click on Diagrams at the bottom left, choose Create New ER Diagram, and select Post and User tables)
+
+
+Examples
+
+```
+INSERT INTO user (username, password ) VALUES('guest', 'guest')
+
+INSERT INTO post (author_id, title, body) VALUES (1, 'First post', 'This is some text')
+
+```
