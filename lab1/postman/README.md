@@ -7,10 +7,10 @@ Now you can run a webapp locally, and start sending API requests to `localhost:<
 
 Getting started in Postman: https://learning.postman.com/docs/getting-started/overview/
 
-# Play with flask-tutorial
-If you have the `flask-tutorial/tutorial` app up and running, you can use Postman to make requests to the app.
+# Play with Flaskr tutorial app
+If you have the Flaskr app up and running, you can use Postman to make requests to the app.
 
-- GET http://127.0.0.1:5000/
+- GET http://127.0.0.1:5000/, or GET http://127.0.0.1:8000/ if you use gunicorn.
 ```
 <!doctype html>
 <title>Posts - Flaskr</title>
