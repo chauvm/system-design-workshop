@@ -1,8 +1,4 @@
-class GradeStore:
-    # usually a wrapper of some ORM
-    def query():
-        db.fetch("SELECT * FROM grades")
-
+# Sqlalchemy
 class Grade(Base):
     __tablename__ = 'grades'
     
