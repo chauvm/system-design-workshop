@@ -2,7 +2,13 @@
 Demo using Celery to improve user experience when filling forms.
 
 Repo: https://github.com/realpython/materials/tree/master/celery-async-tasks
+
+
 Guide: https://realpython.com/asynchronous-tasks-with-django-and-celery/
+
+
+(Optional) Celery overview: https://www.vinta.com.br/blog/celery-overview-archtecture-and-how-it-works
+
 
 In this demo application, users input in a simple form that upon submission, sends an email.
 
@@ -71,8 +77,8 @@ We'll need to start the following components:
 
 5. Start a Redis instance
 First off, we need to start Celery, which essentially has 2 parts:
-- a Redis instance as a message broker
-- a Celery worker (or multiple ones) to process requests
+- a Redis instance as a message broker as well as the backend to store task results
+- a Celery worker (or multiple ones) to process tasks
 
 In this step, let's start the Redis instance first. If you have not yet installed Redis from Lab 2, follow https://redis.io/docs/install/.
 
@@ -88,10 +94,15 @@ $ redis-server
 ```
 python -m celery -A django_celery worker
 ```
-After that, run `ps -ef | grep celery` to see how many Celery worker processes are running.
+Explanation:
+- `-m celery``: This option tells Python to execute the module named celery.
+- `-A django_celery``: This option specifies the Celery application to use. In this case, it's django_celery, which is the name of the Django project.
+- `worker`: This is the command to start the Celery worker process. You can type `celery worker --help` to see more options with this command, including specifying task queue(s) with -Q, defining scheduled tasks with -s, tuning worker pool with --time-limit and --concurrency... 
 
 7. Submitting an async task
-Go to `source_code_final/feedback/forms.py` to see changes made to `send_email`, and follow the `send_feedback_email_task` task definition to confirm that all the code has been moved under it. The only difference is that we call `send_feedback_email_task.delay()` and provide the function call with necessary parameters. Celery takes care of the rest, e.g. gives this task an ID, write the task into Redis, and let one of Celery workers pick up the task. Once the Celery worker is done processing the task, it updates the task status in Redis.
+Go to `source_code_final/feedback/forms.py` to see changes made to `send_email`, and follow the `send_feedback_email_task` task definition to confirm that all the code has been moved under it. 
+
+The only difference in `source_code_final` is that we call `send_feedback_email_task.delay()` and provide the function call with necessary parameters. Celery takes care of the rest, e.g. gives this task an ID, write the task into the Redis broker, and let one of Celery workers pick up the task. Once the Celery worker is done processing the task, it updates the task status in the backend database, which is also Redis in this demo.
 
 To illustrate these steps, start the Django webserver, go to `localhost:8000` and submit another form.
 
@@ -119,5 +130,15 @@ Examine this task by getting its value, we can see that the value is actually an
 
 "{\"status\": \"SUCCESS\", \"result\": null, \"traceback\": null, \"children\": [], \"date_done\": \"2023-12-06T07:49:52.250847\", \"task_id\": \"bc31209f-42cc-4839-a685-d17056156fca\"}"
 ```
+
+9. Retries, error handling, timeout
+When writing code, you should always think of handling failures.
+Read [Celery doc](https://docs.celeryq.dev/en/stable/userguide/tasks.html#retrying) to learn about a couple of task options for this purpose:
+- `retry a task on specific errors`. This is useful for known transient errors that can be resolved with a retry, e.g. network error.
+- `set a max number of retries`. This is so that a task with high failure rate doesn't keep running and consuming worker resources.
+- `retry delay, retry backoff`. This helps even out the number of failed tasks being retried.
+
+This [Doordash's Best practice of retry strategy article](https://developer.doordash.com/en-US/docs/drive/reference/retry_pattern/) has a nice overview of DOs and DONTs when using retry.
+
 
 This is the end of Lab 3. Hit Ctrl-C or `exit` to close running apps.
